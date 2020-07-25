@@ -1,11 +1,14 @@
 package com.gcast.gcast.controllers;
 
+import java.util.UUID;
+
 import com.gcast.gcast.models.GreetingInput;
 import com.gcast.gcast.models.GreetingOutput;
 import com.gcast.gcast.services.MathService;
 import com.gcast.gcast.services.MathServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -55,10 +58,14 @@ public class gcastController {
             @PathVariable("firstNumber") Integer firstNumber,
             @PathVariable("secondNumber") Integer secondNumber
     ) {
-        //MathService mathService = new MathServiceImpl();
+
+        String requestKey = UUID.randomUUID().toString();
+        MDC.put("RequestKey", requestKey);
+
+        logger.info("Controller started. AddNumbers");
+        logger.info("First: " + firstNumber);
+        logger.info("Second: " + secondNumber);
         Integer sum = mathService.AddNumbers(firstNumber, secondNumber);
         return new ResponseEntity<Integer>(sum, HttpStatus.OK);
     }
-
-
 }
