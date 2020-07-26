@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.gcast.gcast.models.AddNumbersInput;
+import com.gcast.gcast.models.AddNumbersOutput;
 import com.gcast.gcast.models.GreetingInput;
 import com.gcast.gcast.models.GreetingOutput;
 import com.gcast.gcast.services.MathService;
@@ -79,4 +81,32 @@ public class gcastController {
         responseHeaders.set("X-Request-Key", requestKey);
         return new ResponseEntity<Integer>(sum, responseHeaders, HttpStatus.OK);
     }
+
+    @PostMapping(path = "AddNumbers", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<AddNumbersOutput> AddNumbersPost(@RequestBody AddNumbersInput addNumbersInput) {
+        Integer firstNumber = addNumbersInput.getFirstNumber();
+        Integer secondNumber = addNumbersInput.getSecondNumber();
+        String personName = addNumbersInput.getPersonName();
+
+        if (firstNumber==null || secondNumber==null || personName==null){
+            String message = "Missing input. Required properties are firstNumber, secondNumber, and personName";
+            AddNumbersOutput addNumbersOutput = new AddNumbersOutput(null, message);
+            return new ResponseEntity<AddNumbersOutput>(addNumbersOutput, HttpStatus.BAD_REQUEST);
+            }
+
+        if (personName.compareTo("Bob") ==0){
+            String message = "Bob is not welcome here";
+            AddNumbersOutput addNumbersOutput = new AddNumbersOutput(null, message);
+            return new ResponseEntity<AddNumbersOutput>(addNumbersOutput, HttpStatus.BAD_REQUEST);
+        }
+
+        Integer sum = mathService.AddNumbers(firstNumber, secondNumber);
+
+        String message = "The sum is " + sum + ", " + personName;
+        AddNumbersOutput addNumbersOutput = new AddNumbersOutput(sum, message);
+        return new ResponseEntity<AddNumbersOutput>(addNumbersOutput, HttpStatus.OK);
+
+    }
+    
+
 }
