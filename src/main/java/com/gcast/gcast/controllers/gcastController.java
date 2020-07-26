@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.gcast.gcast.exceptions.MissingArgumentsException;
 import com.gcast.gcast.models.AddNumbersInput;
 import com.gcast.gcast.models.AddNumbersOutput;
 import com.gcast.gcast.models.GreetingInput;
@@ -63,7 +64,7 @@ public class gcastController {
             @PathVariable("firstNumber") Integer firstNumber,
             @PathVariable("secondNumber") Integer secondNumber,
             HttpServletRequest request
-    ) {
+    ) throws MissingArgumentsException {
 
         String requestKey = request.getHeader("X-Request-Key");
         if (requestKey == null){
@@ -88,8 +89,8 @@ public class gcastController {
         Integer secondNumber = addNumbersInput.getSecondNumber();
         String personName = addNumbersInput.getPersonName();
 
-        if (firstNumber==null || secondNumber==null || personName==null){
-            String message = "Missing input. Required properties are firstNumber, secondNumber, and personName";
+        if (personName==null){
+            String message = "Missing input. personName is required";
             AddNumbersOutput addNumbersOutput = new AddNumbersOutput(null, message);
             return new ResponseEntity<AddNumbersOutput>(addNumbersOutput, HttpStatus.BAD_REQUEST);
             }
@@ -100,7 +101,14 @@ public class gcastController {
             return new ResponseEntity<AddNumbersOutput>(addNumbersOutput, HttpStatus.BAD_REQUEST);
         }
 
-        Integer sum = mathService.AddNumbers(firstNumber, secondNumber);
+        Integer sum = null;
+        try{
+            sum = mathService.AddNumbers(firstNumber, secondNumber);
+        }catch (MissingArgumentsException ex){
+            String message = ex.getMessage();
+            AddNumbersOutput addNumbersOutput = new AddNumbersOutput(null, message);
+            return new ResponseEntity<AddNumbersOutput>(addNumbersOutput, HttpStatus.BAD_REQUEST);
+        }
 
         String message = "The sum is " + sum + ", " + personName;
         AddNumbersOutput addNumbersOutput = new AddNumbersOutput(sum, message);

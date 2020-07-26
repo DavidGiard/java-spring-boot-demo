@@ -1,5 +1,7 @@
 package com.gcast.gcast.services;
 
+import com.gcast.gcast.exceptions.MissingArgumentsException;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -7,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MathServiceMock implements MathService {
     @Override
-    public Integer AddNumbers(Integer firstNumber, Integer secondNumber) {
+    public Integer AddNumbers(Integer firstNumber, Integer secondNumber) throws MissingArgumentsException{
         return 10;
     }
 }
