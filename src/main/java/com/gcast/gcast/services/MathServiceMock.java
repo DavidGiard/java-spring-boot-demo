@@ -12,4 +12,9 @@ public class MathServiceMock implements MathService {
     public Integer AddNumbers(Integer firstNumber, Integer secondNumber) throws MissingArgumentsException{
         return 10;
     }
+
+    @Override
+    public Integer DivideNumbers (Integer firstNumber, Integer secondNumber){
+        return 10;
+    }
 }

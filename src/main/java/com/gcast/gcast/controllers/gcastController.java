@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.gcast.gcast.exceptions.MissingArgumentsException;
 import com.gcast.gcast.models.AddNumbersInput;
 import com.gcast.gcast.models.AddNumbersOutput;
+import com.gcast.gcast.models.DivideNumbersInput;
+import com.gcast.gcast.models.DivideNumbersOutput;
 import com.gcast.gcast.models.GreetingInput;
 import com.gcast.gcast.models.GreetingOutput;
 import com.gcast.gcast.services.MathService;
@@ -116,5 +118,27 @@ public class gcastController {
 
     }
     
+    @PostMapping(path = "DivideNumbers", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<DivideNumbersOutput> DivideNumbersPost(@RequestBody DivideNumbersInput divideNumbersInput) {
+        Integer firstNumber = divideNumbersInput.getFirstNumber();
+        Integer secondNumber = divideNumbersInput.getSecondNumber();
+        String personName = divideNumbersInput.getPersonName();
+
+        Integer quotient = 0;
+        DivideNumbersOutput divideNumbersOutput;
+
+        try {
+            quotient = mathService.DivideNumbers(firstNumber, secondNumber);
+            String message = "The quotient is " + quotient + ", " + personName;
+            divideNumbersOutput = new DivideNumbersOutput(quotient, message);
+            } catch (ArithmeticException e) {
+            String message = "An arithmetic error has occured, " + personName + "! : " + e.getMessage();
+            divideNumbersOutput = new DivideNumbersOutput(null, message);
+        } catch (Exception e) {
+            String message = "An error has occured, " + personName + "! : " + e.getMessage();
+            divideNumbersOutput = new DivideNumbersOutput(null, message);
+        }
+        return new ResponseEntity<DivideNumbersOutput>(divideNumbersOutput, HttpStatus.OK);
+    }
 
 }

@@ -27,4 +27,11 @@ public class MathServiceImpl implements MathService {
         Integer sum = firstNumber + secondNumber;
         return sum;
     }
+
+    @Override
+    public Integer DivideNumbers (Integer firstNumber, Integer secondNumber){
+        Integer quotient = 0;
+        quotient = firstNumber / secondNumber;
+        return quotient;
+    }
 }
