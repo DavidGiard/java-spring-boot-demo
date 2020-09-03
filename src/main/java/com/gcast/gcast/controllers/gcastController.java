@@ -29,7 +29,6 @@ public class gcastController {
 
     private Logger logger = LoggerFactory.getLogger(gcastController.class);
 
-
     @Autowired
     @Qualifier("MathServiceImpl")
     private MathService mathService;
@@ -62,14 +61,12 @@ public class gcastController {
     }
 
     @GetMapping("AddNumbers/{firstNumber}/{secondNumber}")
-    public ResponseEntity<Integer> AddNumbers(
-            @PathVariable("firstNumber") Integer firstNumber,
-            @PathVariable("secondNumber") Integer secondNumber,
-            HttpServletRequest request
-    ) throws MissingArgumentsException {
+    public ResponseEntity<Integer> AddNumbers(@PathVariable("firstNumber") Integer firstNumber,
+            @PathVariable("secondNumber") Integer secondNumber, HttpServletRequest request)
+            throws MissingArgumentsException {
 
         String requestKey = request.getHeader("X-Request-Key");
-        if (requestKey == null){
+        if (requestKey == null) {
             requestKey = UUID.randomUUID().toString();
         }
 
@@ -79,45 +76,38 @@ public class gcastController {
         logger.info("First: " + firstNumber);
         logger.info("Second: " + secondNumber);
         Integer sum = mathService.AddNumbers(firstNumber, secondNumber);
-        
+
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("X-Request-Key", requestKey);
         return new ResponseEntity<Integer>(sum, responseHeaders, HttpStatus.OK);
     }
 
     @PostMapping(path = "AddNumbers", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<AddNumbersOutput> AddNumbersPost(@RequestBody AddNumbersInput addNumbersInput) {
+    public ResponseEntity<AddNumbersOutput> AddNumbersPost(@RequestBody AddNumbersInput addNumbersInput)
+            throws MissingArgumentsException {
         Integer firstNumber = addNumbersInput.getFirstNumber();
         Integer secondNumber = addNumbersInput.getSecondNumber();
         String personName = addNumbersInput.getPersonName();
 
-        if (personName==null){
+        if (personName == null) {
             String message = "Missing input. personName is required";
-            AddNumbersOutput addNumbersOutput = new AddNumbersOutput(null, message);
-            return new ResponseEntity<AddNumbersOutput>(addNumbersOutput, HttpStatus.BAD_REQUEST);
-            }
+            throw new MissingArgumentsException(message);
+        }
 
-        if (personName.compareTo("Bob") ==0){
+        if (personName.compareTo("Bob") == 0) {
             String message = "Bob is not welcome here";
-            AddNumbersOutput addNumbersOutput = new AddNumbersOutput(null, message);
-            return new ResponseEntity<AddNumbersOutput>(addNumbersOutput, HttpStatus.BAD_REQUEST);
+            throw new MissingArgumentsException(message);
         }
 
         Integer sum = null;
-        try{
-            sum = mathService.AddNumbers(firstNumber, secondNumber);
-        }catch (MissingArgumentsException ex){
-            String message = ex.getMessage();
-            AddNumbersOutput addNumbersOutput = new AddNumbersOutput(null, message);
-            return new ResponseEntity<AddNumbersOutput>(addNumbersOutput, HttpStatus.BAD_REQUEST);
-        }
+        sum = mathService.AddNumbers(firstNumber, secondNumber);
 
         String message = "The sum is " + sum + ", " + personName;
         AddNumbersOutput addNumbersOutput = new AddNumbersOutput(sum, message);
         return new ResponseEntity<AddNumbersOutput>(addNumbersOutput, HttpStatus.OK);
 
     }
-    
+
     @PostMapping(path = "DivideNumbers", consumes = "application/json", produces = "application/json")
     public ResponseEntity<DivideNumbersOutput> DivideNumbersPost(@RequestBody DivideNumbersInput divideNumbersInput) {
         Integer firstNumber = divideNumbersInput.getFirstNumber();
@@ -127,17 +117,10 @@ public class gcastController {
         Integer quotient = 0;
         DivideNumbersOutput divideNumbersOutput;
 
-        try {
-            quotient = mathService.DivideNumbers(firstNumber, secondNumber);
-            String message = "The quotient is " + quotient + ", " + personName;
-            divideNumbersOutput = new DivideNumbersOutput(quotient, message);
-            } catch (ArithmeticException e) {
-            String message = "An arithmetic error has occured, " + personName + "! : " + e.getMessage();
-            divideNumbersOutput = new DivideNumbersOutput(null, message);
-        } catch (Exception e) {
-            String message = "An error has occured, " + personName + "! : " + e.getMessage();
-            divideNumbersOutput = new DivideNumbersOutput(null, message);
-        }
+        quotient = mathService.DivideNumbers(firstNumber, secondNumber);
+        String message = "The quotient is " + quotient + ", " + personName;
+        divideNumbersOutput = new DivideNumbersOutput(quotient, message);
+
         return new ResponseEntity<DivideNumbersOutput>(divideNumbersOutput, HttpStatus.OK);
     }
 

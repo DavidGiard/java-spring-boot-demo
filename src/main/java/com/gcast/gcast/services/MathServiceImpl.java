@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-
 @Qualifier("MathServiceImpl")
 @Service
 public class MathServiceImpl implements MathService {
@@ -20,7 +19,7 @@ public class MathServiceImpl implements MathService {
         logger.info("First: " + firstNumber);
         logger.info("Second: " + secondNumber);
 
-        if (firstNumber==null || secondNumber==null){
+        if (firstNumber == null || secondNumber == null) {
             String message = "Missing input. firstNumber amd secondNumber are required";
             throw new MissingArgumentsException(message);
         }
@@ -29,7 +28,7 @@ public class MathServiceImpl implements MathService {
     }
 
     @Override
-    public Integer DivideNumbers (Integer firstNumber, Integer secondNumber){
+    public Integer DivideNumbers(Integer firstNumber, Integer secondNumber) {
         Integer quotient = 0;
         quotient = firstNumber / secondNumber;
         return quotient;
